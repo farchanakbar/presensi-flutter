@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:presensi/app/controllers/page_index_controller.dart';
+import 'package:presensi/app/routes/app_pages.dart';
 
 import '../controllers/home_controller.dart';
 
@@ -69,7 +70,14 @@ class HomeView extends GetView<HomeController> {
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        const Text('Desa Paseban, RT04'),
+                        Text(
+                          dataUser['position'] != null
+                              ? '${dataUser['position']}'
+                              : 'tidak ada lokasi',
+                          style: const TextStyle(
+                            fontSize: 11,
+                          ),
+                        ),
                       ],
                     )
                   ],
@@ -160,9 +168,7 @@ class HomeView extends GetView<HomeController> {
                       ),
                     ),
                     TextButton(
-                      onPressed: () {
-                        //
-                      },
+                      onPressed: () => Get.toNamed(Routes.ALL_PRESENSI),
                       child: const Text('See more'),
                     )
                   ],
@@ -175,43 +181,59 @@ class HomeView extends GetView<HomeController> {
                   physics: const NeverScrollableScrollPhysics(),
                   itemCount: 5,
                   itemBuilder: (context, index) {
-                    return Container(
-                      padding: const EdgeInsets.all(20),
-                      margin: const EdgeInsets.only(bottom: 20),
-                      decoration: BoxDecoration(
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 10),
+                      child: Material(
+                        color: Colors.grey[200],
                         borderRadius: BorderRadius.circular(
                           20,
                         ),
-                        color: Colors.grey[200],
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              const Text(
-                                'Masuk',
-                                style: TextStyle(fontWeight: FontWeight.bold),
+                        child: InkWell(
+                          onTap: () => Get.toNamed(Routes.DETAIL_PRESENSI),
+                          borderRadius: BorderRadius.circular(
+                            20,
+                          ),
+                          child: Container(
+                            padding: const EdgeInsets.all(20),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(
+                                20,
                               ),
-                              Text(
-                                DateFormat.yMMMEd().format(DateTime.now()),
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    const Text(
+                                      'Masuk',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    Text(
+                                      DateFormat.yMMMEd()
+                                          .format(DateTime.now()),
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    )
+                                  ],
                                 ),
-                              )
-                            ],
+                                Text(DateFormat.jms().format(DateTime.now())),
+                                const SizedBox(
+                                  height: 10,
+                                ),
+                                const Text(
+                                  'Keluar',
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
+                                Text(DateFormat.jms().format(DateTime.now())),
+                              ],
+                            ),
                           ),
-                          Text(DateFormat.jms().format(DateTime.now())),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          const Text(
-                            'Keluar',
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                          Text(DateFormat.jms().format(DateTime.now())),
-                        ],
+                        ),
                       ),
                     );
                   },
