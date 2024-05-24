@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:presensi/app/routes/app_pages.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 
 class PageIndexController extends GetxController {
@@ -15,10 +17,20 @@ class PageIndexController extends GetxController {
         Map<String, dynamic> dataResponse = await determinePosition();
         if (dataResponse['error'] != true) {
           Position position = dataResponse['posisi'];
-          await updatePosition(position);
+          List<Placemark> placemarks = await placemarkFromCoordinates(
+            position.latitude,
+            position.longitude,
+          );
+          String address =
+              '${placemarks[0].street}, ${placemarks[0].subLocality}, ${placemarks[0].locality}, ${placemarks[0].subAdministrativeArea},';
+          await updatePosition(position, placemarks);
+
+          // presensi
+          await presensi(position, address);
+
           Get.snackbar(
-            '${dataResponse['message']}',
-            'Lokasi kamu ${position.latitude} ${position.longitude}',
+            'Berhasil',
+            'Telah berhasil absen hari ini',
           );
         } else {
           Get.snackbar('Terjadi Kesalahan', '${dataResponse['message']}');
@@ -34,14 +46,49 @@ class PageIndexController extends GetxController {
     }
   }
 
-  Future<void> updatePosition(Position position) async {
+  Future<void> presensi(Position position, String address) async {
     String uid = auth.currentUser!.uid;
-    await firestore.collection('pegawai').doc(uid).update({
-      'position': {
-        'lat': position.latitude,
-        'long': position.longitude,
-      }
-    });
+
+    CollectionReference<Map<String, dynamic>> colAbsen =
+        firestore.collection('pegawai').doc(uid).collection('absen');
+    QuerySnapshot<Map<String, dynamic>> snapAbsen = await colAbsen.get();
+
+    DateTime now = DateTime.now();
+    String todayDocId = DateFormat.yMd().format(now).replaceAll('/', '-');
+
+    if (snapAbsen.docs.isEmpty) {
+      await colAbsen.doc(todayDocId).set({
+        'date': now.toIso8601String(),
+        'masuk': {
+          'date': now.toIso8601String(),
+          'lat': position.latitude,
+          'long': position.longitude,
+          'address': address,
+          'status': 'di dalam area',
+        }
+      });
+    } else {}
+  }
+
+  Future<void> updatePosition(
+      Position position, List<Placemark> placemark) async {
+    String uid = auth.currentUser!.uid;
+    await firestore.collection('pegawai').doc(uid).update(
+      {
+        'position': {
+          'lat': position.latitude,
+          'long': position.longitude,
+        },
+        'address': {
+          'jalan': placemark[0].street,
+          'desa': placemark[0].subLocality,
+          'kecamatan': placemark[0].locality,
+          'kabupaten': placemark[0].subAdministrativeArea,
+          'provinsi': placemark[0].administrativeArea,
+          'negara': placemark[0].country,
+        }
+      },
+    );
   }
 
   Future<Map<String, dynamic>> determinePosition() async {

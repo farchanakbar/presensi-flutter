@@ -70,12 +70,15 @@ class HomeView extends GetView<HomeController> {
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        Text(
-                          dataUser['position'] != null
-                              ? '${dataUser['position']}'
-                              : 'tidak ada lokasi',
-                          style: const TextStyle(
-                            fontSize: 11,
+                        SizedBox(
+                          width: 200,
+                          child: Text(
+                            dataUser['address'] != null
+                                ? '${dataUser['address']['jalan'] != 'Jalan Tanpa Nama' ? '${dataUser['address']['jalan']}, ' : ''}${dataUser['address']['desa']}, ${dataUser['address']['kecamatan']}, ${dataUser['address']['kabupaten']}, ${dataUser['address']['provinsi']}'
+                                : 'tidak ada lokasi',
+                            style: const TextStyle(
+                              fontSize: 11,
+                            ),
                           ),
                         ),
                       ],
