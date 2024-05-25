@@ -25,8 +25,16 @@ class PageIndexController extends GetxController {
               '${placemarks[0].street}, ${placemarks[0].subLocality}, ${placemarks[0].locality}, ${placemarks[0].subAdministrativeArea},';
           await updatePosition(position, placemarks);
 
+          // cek distance absen
+          double distance = Geolocator.distanceBetween(
+            -1.16228,
+            102.1535356,
+            position.latitude,
+            position.longitude,
+          );
+
           // presensi
-          await presensi(position, address);
+          await presensi(position, address, distance);
 
           Get.snackbar(
             'Berhasil',
@@ -46,7 +54,8 @@ class PageIndexController extends GetxController {
     }
   }
 
-  Future<void> presensi(Position position, String address) async {
+  Future<void> presensi(
+      Position position, String address, double distance) async {
     String uid = auth.currentUser!.uid;
 
     CollectionReference<Map<String, dynamic>> colAbsen =
@@ -56,6 +65,12 @@ class PageIndexController extends GetxController {
     DateTime now = DateTime.now();
     String todayDocId = DateFormat.yMd().format(now).replaceAll('/', '-');
 
+    String status = 'Di Luar Area';
+
+    if (distance <= 50) {
+      status = 'Di Dalam Area';
+    }
+
     if (snapAbsen.docs.isEmpty) {
       await colAbsen.doc(todayDocId).set({
         'date': now.toIso8601String(),
@@ -64,10 +79,50 @@ class PageIndexController extends GetxController {
           'lat': position.latitude,
           'long': position.longitude,
           'address': address,
-          'status': 'di dalam area',
+          'status': status,
+          'distance': distance,
         }
       });
-    } else {}
+    } else {
+      DocumentSnapshot<Map<String, dynamic>> todayDoc =
+          await colAbsen.doc(todayDocId).get();
+
+      Map<String, dynamic>? todayData = todayDoc.data();
+
+      if (todayDoc.exists == true) {
+        if (todayData!['keluar'] != null) {
+          Get.snackbar('Sukses', 'kamu telah selesai absen hari ini');
+        } else {
+          await colAbsen.doc(todayDocId).update(
+            {
+              'keluar': {
+                'date': now.toIso8601String(),
+                'lat': position.latitude,
+                'long': position.longitude,
+                'address': address,
+                'status': status,
+                'distance': distance,
+              }
+            },
+          );
+        }
+      } else {
+        // absen masuk
+        await colAbsen.doc(todayDocId).set(
+          {
+            'date': now.toIso8601String(),
+            'masuk': {
+              'date': now.toIso8601String(),
+              'lat': position.latitude,
+              'long': position.longitude,
+              'address': address,
+              'status': status,
+              'distance': distance,
+            }
+          },
+        );
+      }
+    }
   }
 
   Future<void> updatePosition(

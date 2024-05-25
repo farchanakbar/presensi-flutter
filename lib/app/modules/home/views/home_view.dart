@@ -127,28 +127,90 @@ class HomeView extends GetView<HomeController> {
                     ),
                     color: Colors.grey[200],
                   ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      const Column(
-                        children: [
-                          Text('Masuk'),
-                          Text('-'),
-                        ],
-                      ),
-                      Container(
-                        width: 2,
-                        height: 40,
-                        color: Colors.grey,
-                      ),
-                      const Column(
-                        children: [
-                          Text('Keluar'),
-                          Text('-'),
-                        ],
-                      )
-                    ],
-                  ),
+                  child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+                      stream: controller.streamLastAbsen(),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              const Column(
+                                children: [
+                                  Text('Masuk'),
+                                  Text('belum absen'),
+                                ],
+                              ),
+                              Container(
+                                width: 2,
+                                height: 40,
+                                color: Colors.grey,
+                              ),
+                              const Column(
+                                children: [
+                                  Text('Keluar'),
+                                  Text('belum absen'),
+                                ],
+                              )
+                            ],
+                          );
+                        }
+
+                        if (snapshot.data!.docs.isEmpty) {
+                          return Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              const Column(
+                                children: [
+                                  Text('Masuk'),
+                                  Text('belum absen'),
+                                ],
+                              ),
+                              Container(
+                                width: 2,
+                                height: 40,
+                                color: Colors.grey,
+                              ),
+                              const Column(
+                                children: [
+                                  Text('Keluar'),
+                                  Text('belum absen'),
+                                ],
+                              )
+                            ],
+                          );
+                        }
+
+                        Map<String, dynamic> data =
+                            snapshot.data!.docs.last.data();
+
+                        return Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            Column(
+                              children: [
+                                const Text('Masuk'),
+                                Text(data['masuk'] != null
+                                    ? '${DateFormat.jms().format(DateTime.parse(data['masuk']['date']))}'
+                                    : 'belum absen'),
+                              ],
+                            ),
+                            Container(
+                              width: 2,
+                              height: 40,
+                              color: Colors.grey,
+                            ),
+                            Column(
+                              children: [
+                                const Text('Keluar'),
+                                Text(data['keluar'] != null
+                                    ? '${DateFormat.jms().format(DateTime.parse(data['keluar']['date']))}'
+                                    : 'belum absen'),
+                              ],
+                            )
+                          ],
+                        );
+                      }),
                 ),
                 const SizedBox(
                   height: 20,
@@ -179,68 +241,131 @@ class HomeView extends GetView<HomeController> {
                 const SizedBox(
                   height: 10,
                 ),
-                ListView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: 5,
-                  itemBuilder: (context, index) {
-                    return Padding(
-                      padding: const EdgeInsets.only(bottom: 10),
-                      child: Material(
-                        color: Colors.grey[200],
-                        borderRadius: BorderRadius.circular(
-                          20,
-                        ),
-                        child: InkWell(
-                          onTap: () => Get.toNamed(Routes.DETAIL_PRESENSI),
-                          borderRadius: BorderRadius.circular(
-                            20,
+                StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+                    stream: controller.streamLastAbsen(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(
+                          child: CircularProgressIndicator(),
+                        );
+                      }
+
+                      if (snapshot.data!.docs.isEmpty) {
+                        return const SizedBox(
+                          height: 150,
+                          child: Center(
+                            child: Text('belum ada absen'),
                           ),
-                          child: Container(
-                            padding: const EdgeInsets.all(20),
-                            decoration: BoxDecoration(
+                        );
+                      }
+
+                      return ListView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: snapshot.data!.docs.length,
+                        itemBuilder: (context, index) {
+                          Map<String, dynamic> data = snapshot
+                              .data!.docs.reversed
+                              .toList()[index]
+                              .data();
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 10),
+                            child: Material(
+                              color: Colors.grey[200],
                               borderRadius: BorderRadius.circular(
                                 20,
                               ),
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    const Text(
-                                      'Masuk',
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold),
+                              child: InkWell(
+                                onTap: () => Get.toNamed(Routes.DETAIL_PRESENSI,
+                                    arguments: data),
+                                borderRadius: BorderRadius.circular(
+                                  20,
+                                ),
+                                child: Container(
+                                  padding: const EdgeInsets.all(20),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(
+                                      20,
                                     ),
-                                    Text(
-                                      DateFormat.yMMMEd()
-                                          .format(DateTime.now()),
-                                      style: const TextStyle(
-                                        fontWeight: FontWeight.bold,
+                                  ),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          const Text(
+                                            'Masuk',
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                          Text(
+                                            DateFormat.yMMMEd().format(
+                                                DateTime.parse(data['date'])),
+                                            style: const TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          )
+                                        ],
                                       ),
-                                    )
-                                  ],
+                                      Text(DateFormat.jms().format(
+                                          DateTime.parse(
+                                              data['masuk']['date']))),
+                                      data['masuk']['status'] != 'Di Dalam Area'
+                                          ? Text(
+                                              'Absen ${data['masuk']['status']}',
+                                              style: const TextStyle(
+                                                color: Colors.red,
+                                              ),
+                                            )
+                                          : Text(
+                                              'Absen ${data['masuk']['status']}',
+                                              style: const TextStyle(
+                                                color: Colors.green,
+                                              ),
+                                            ),
+                                      const SizedBox(
+                                        height: 10,
+                                      ),
+                                      const Text(
+                                        'Keluar',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                      Text(
+                                        data['keluar'] != null
+                                            ? DateFormat.jms().format(
+                                                DateTime.parse(
+                                                    data['keluar']['date']))
+                                            : 'belum absen keluar',
+                                      ),
+                                      data['keluar'] != null
+                                          ? data['masuk']['status'] !=
+                                                  'Di Dalam Area'
+                                              ? Text(
+                                                  'Absen ${data['masuk']['status']}',
+                                                  style: const TextStyle(
+                                                    color: Colors.red,
+                                                  ),
+                                                )
+                                              : Text(
+                                                  'Absen ${data['masuk']['status']}',
+                                                  style: const TextStyle(
+                                                    color: Colors.green,
+                                                  ),
+                                                )
+                                          : const SizedBox()
+                                    ],
+                                  ),
                                 ),
-                                Text(DateFormat.jms().format(DateTime.now())),
-                                const SizedBox(
-                                  height: 10,
-                                ),
-                                const Text(
-                                  'Keluar',
-                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                ),
-                                Text(DateFormat.jms().format(DateTime.now())),
-                              ],
+                              ),
                             ),
-                          ),
-                        ),
-                      ),
-                    );
-                  },
-                ),
+                          );
+                        },
+                      );
+                    }),
               ],
             );
           }),

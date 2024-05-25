@@ -11,4 +11,15 @@ class HomeController extends GetxController {
     String uid = auth.currentUser!.uid;
     yield* firestore.collection('pegawai').doc(uid).snapshots();
   }
+
+  Stream<QuerySnapshot<Map<String, dynamic>>> streamLastAbsen() async* {
+    String uid = auth.currentUser!.uid;
+    yield* firestore
+        .collection('pegawai')
+        .doc(uid)
+        .collection('absen')
+        .orderBy('date')
+        .limit(5)
+        .snapshots();
+  }
 }
