@@ -127,8 +127,8 @@ class HomeView extends GetView<HomeController> {
                     ),
                     color: Colors.grey[200],
                   ),
-                  child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-                      stream: controller.streamLastAbsen(),
+                  child: StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                      stream: controller.streamTodayAbsen(),
                       builder: (context, snapshot) {
                         if (snapshot.connectionState ==
                             ConnectionState.waiting) {
@@ -138,7 +138,7 @@ class HomeView extends GetView<HomeController> {
                               const Column(
                                 children: [
                                   Text('Masuk'),
-                                  Text('belum absen'),
+                                  CircularProgressIndicator(),
                                 ],
                               ),
                               Container(
@@ -149,40 +149,39 @@ class HomeView extends GetView<HomeController> {
                               const Column(
                                 children: [
                                   Text('Keluar'),
-                                  Text('belum absen'),
+                                  CircularProgressIndicator(),
                                 ],
                               )
                             ],
                           );
                         }
 
-                        if (snapshot.data!.docs.isEmpty) {
-                          return Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: [
-                              const Column(
-                                children: [
-                                  Text('Masuk'),
-                                  Text('belum absen'),
-                                ],
-                              ),
-                              Container(
-                                width: 2,
-                                height: 40,
-                                color: Colors.grey,
-                              ),
-                              const Column(
-                                children: [
-                                  Text('Keluar'),
-                                  Text('belum absen'),
-                                ],
-                              )
-                            ],
-                          );
-                        }
+                        // if (snapshot.data) {
+                        //   return Row(
+                        //     mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        //     children: [
+                        //       const Column(
+                        //         children: [
+                        //           Text('Masuk'),
+                        //           Text('belum absen'),
+                        //         ],
+                        //       ),
+                        //       Container(
+                        //         width: 2,
+                        //         height: 40,
+                        //         color: Colors.grey,
+                        //       ),
+                        //       const Column(
+                        //         children: [
+                        //           Text('Keluar'),
+                        //           Text('belum absen'),
+                        //         ],
+                        //       )
+                        //     ],
+                        //   );
+                        // }
 
-                        Map<String, dynamic> data =
-                            snapshot.data!.docs.last.data();
+                        Map<String, dynamic>? data = snapshot.data?.data();
 
                         return Row(
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -190,8 +189,8 @@ class HomeView extends GetView<HomeController> {
                             Column(
                               children: [
                                 const Text('Masuk'),
-                                Text(data['masuk'] != null
-                                    ? '${DateFormat.jms().format(DateTime.parse(data['masuk']['date']))}'
+                                Text(data?['masuk'] != null
+                                    ? '${DateFormat.jms().format(DateTime.parse(data!['masuk']['date']))}'
                                     : 'belum absen'),
                               ],
                             ),
@@ -203,8 +202,8 @@ class HomeView extends GetView<HomeController> {
                             Column(
                               children: [
                                 const Text('Keluar'),
-                                Text(data['keluar'] != null
-                                    ? '${DateFormat.jms().format(DateTime.parse(data['keluar']['date']))}'
+                                Text(data?['keluar'] != null
+                                    ? '${DateFormat.jms().format(DateTime.parse(data!['keluar']['date']))}'
                                     : 'belum absen'),
                               ],
                             )
@@ -264,10 +263,8 @@ class HomeView extends GetView<HomeController> {
                         physics: const NeverScrollableScrollPhysics(),
                         itemCount: snapshot.data!.docs.length,
                         itemBuilder: (context, index) {
-                          Map<String, dynamic> data = snapshot
-                              .data!.docs.reversed
-                              .toList()[index]
-                              .data();
+                          Map<String, dynamic> data =
+                              snapshot.data!.docs[index].data();
                           return Padding(
                             padding: const EdgeInsets.only(bottom: 10),
                             child: Material(

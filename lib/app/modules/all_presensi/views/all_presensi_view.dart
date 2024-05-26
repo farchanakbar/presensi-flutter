@@ -67,7 +67,8 @@ class AllPresensiView extends GetView<AllPresensiController> {
                             20,
                           ),
                           child: InkWell(
-                            onTap: () => Get.toNamed(Routes.DETAIL_PRESENSI),
+                            onTap: () => Get.toNamed(Routes.DETAIL_PRESENSI,
+                                arguments: data),
                             borderRadius: BorderRadius.circular(
                               20,
                             ),

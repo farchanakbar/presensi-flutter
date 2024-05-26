@@ -12,7 +12,7 @@ class AllPresensiController extends GetxController {
         .collection('pegawai')
         .doc(uid)
         .collection('absen')
-        .orderBy('date')
+        .orderBy('date', descending: true)
         .snapshots();
   }
 }

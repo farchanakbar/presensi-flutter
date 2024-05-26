@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 
 class HomeController extends GetxController {
   RxBool isLoading = false.obs;
@@ -18,8 +19,22 @@ class HomeController extends GetxController {
         .collection('pegawai')
         .doc(uid)
         .collection('absen')
-        .orderBy('date')
+        .orderBy('date', descending: true)
         .limit(5)
+        .snapshots();
+  }
+
+  Stream<DocumentSnapshot<Map<String, dynamic>>> streamTodayAbsen() async* {
+    String uid = auth.currentUser!.uid;
+
+    String todayID =
+        DateFormat.yMd().format(DateTime.now()).replaceAll('/', '-');
+
+    yield* firestore
+        .collection('pegawai')
+        .doc(uid)
+        .collection('absen')
+        .doc(todayID)
         .snapshots();
   }
 }

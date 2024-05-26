@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:presensi/app/routes/app_pages.dart';
@@ -35,11 +36,6 @@ class PageIndexController extends GetxController {
 
           // presensi
           await presensi(position, address, distance);
-
-          Get.snackbar(
-            'Berhasil',
-            'Telah berhasil absen hari ini',
-          );
         } else {
           Get.snackbar('Terjadi Kesalahan', '${dataResponse['message']}');
         }
@@ -67,22 +63,37 @@ class PageIndexController extends GetxController {
 
     String status = 'Di Luar Area';
 
-    if (distance <= 50) {
+    if (distance <= 200) {
       status = 'Di Dalam Area';
     }
 
     if (snapAbsen.docs.isEmpty) {
-      await colAbsen.doc(todayDocId).set({
-        'date': now.toIso8601String(),
-        'masuk': {
-          'date': now.toIso8601String(),
-          'lat': position.latitude,
-          'long': position.longitude,
-          'address': address,
-          'status': status,
-          'distance': distance,
-        }
-      });
+      await Get.defaultDialog(
+          title: 'Validasi Absen',
+          middleText: 'Yakin absen masuk sekarang?',
+          actions: [
+            OutlinedButton(onPressed: () => Get.back(), child: Text('Batal')),
+            ElevatedButton(
+                onPressed: () async {
+                  await colAbsen.doc(todayDocId).set({
+                    'date': now.toIso8601String(),
+                    'masuk': {
+                      'date': now.toIso8601String(),
+                      'lat': position.latitude,
+                      'long': position.longitude,
+                      'address': address,
+                      'status': status,
+                      'distance': distance,
+                    }
+                  });
+                  Get.back();
+                  Get.snackbar(
+                    'Berhasil',
+                    'Telah berhasil absen masuk hari ini',
+                  );
+                },
+                child: Text('Absen'))
+          ]);
     } else {
       DocumentSnapshot<Map<String, dynamic>> todayDoc =
           await colAbsen.doc(todayDocId).get();
@@ -91,36 +102,68 @@ class PageIndexController extends GetxController {
 
       if (todayDoc.exists == true) {
         if (todayData!['keluar'] != null) {
-          Get.snackbar('Sukses', 'kamu telah selesai absen hari ini');
+          Get.snackbar(
+              'Informasi Penting', 'kamu telah selesai absen hari ini');
         } else {
-          await colAbsen.doc(todayDocId).update(
-            {
-              'keluar': {
-                'date': now.toIso8601String(),
-                'lat': position.latitude,
-                'long': position.longitude,
-                'address': address,
-                'status': status,
-                'distance': distance,
-              }
-            },
-          );
+          await Get.defaultDialog(
+              title: 'Validasi Absen',
+              middleText: 'Yakin absen keluar sekarang?',
+              actions: [
+                OutlinedButton(
+                    onPressed: () => Get.back(), child: Text('Batal')),
+                ElevatedButton(
+                    onPressed: () async {
+                      await colAbsen.doc(todayDocId).update(
+                        {
+                          'keluar': {
+                            'date': now.toIso8601String(),
+                            'lat': position.latitude,
+                            'long': position.longitude,
+                            'address': address,
+                            'status': status,
+                            'distance': distance,
+                          }
+                        },
+                      );
+                      Get.back();
+                      Get.snackbar(
+                        'Berhasil',
+                        'Telah berhasil absen keluar hari ini',
+                      );
+                    },
+                    child: Text('Absen'))
+              ]);
         }
       } else {
         // absen masuk
-        await colAbsen.doc(todayDocId).set(
-          {
-            'date': now.toIso8601String(),
-            'masuk': {
-              'date': now.toIso8601String(),
-              'lat': position.latitude,
-              'long': position.longitude,
-              'address': address,
-              'status': status,
-              'distance': distance,
-            }
-          },
-        );
+        await Get.defaultDialog(
+            title: 'Validasi Absen',
+            middleText: 'Yakin absen masuk sekarang?',
+            actions: [
+              OutlinedButton(onPressed: () => Get.back(), child: Text('Batal')),
+              ElevatedButton(
+                  onPressed: () async {
+                    await colAbsen.doc(todayDocId).set(
+                      {
+                        'date': now.toIso8601String(),
+                        'masuk': {
+                          'date': now.toIso8601String(),
+                          'lat': position.latitude,
+                          'long': position.longitude,
+                          'address': address,
+                          'status': status,
+                          'distance': distance,
+                        }
+                      },
+                    );
+                    Get.back();
+                    Get.snackbar(
+                      'Berhasil',
+                      'Telah berhasil absen masuk hari ini',
+                    );
+                  },
+                  child: Text('Absen'))
+            ]);
       }
     }
   }
@@ -190,7 +233,8 @@ class PageIndexController extends GetxController {
 
     // When we reach here, permissions are granted and we can
     // continue accessing the position of the device.
-    Position position = await Geolocator.getCurrentPosition();
+    Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.best);
     return {
       'posisi': position,
       'message': 'Berhasil mendapatkan posisi device',
