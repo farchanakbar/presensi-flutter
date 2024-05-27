@@ -28,10 +28,12 @@ void main() async {
           );
         }
 
-        print(snapshot.data);
         return GetMaterialApp(
           debugShowCheckedModeBanner: false,
-          title: "Application",
+          theme: ThemeData(
+            scaffoldBackgroundColor: Colors.grey[400],
+          ),
+          title: "App Absensi",
           initialRoute: snapshot.data != null ? Routes.HOME : Routes.LOGIN,
           getPages: AppPages.routes,
         );

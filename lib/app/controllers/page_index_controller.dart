@@ -61,10 +61,10 @@ class PageIndexController extends GetxController {
     DateTime now = DateTime.now();
     String todayDocId = DateFormat.yMd().format(now).replaceAll('/', '-');
 
-    String status = 'Di Luar Area';
+    String status = 'di luar area';
 
     if (distance <= 200) {
-      status = 'Di Dalam Area';
+      status = 'di dalam area';
     }
 
     if (snapAbsen.docs.isEmpty) {
@@ -234,7 +234,7 @@ class PageIndexController extends GetxController {
     // When we reach here, permissions are granted and we can
     // continue accessing the position of the device.
     Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.best);
+        desiredAccuracy: LocationAccuracy.high);
     return {
       'posisi': position,
       'message': 'Berhasil mendapatkan posisi device',

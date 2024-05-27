@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
+import 'package:presensi/app/data/constans/color.dart';
 
 import '../controllers/update_password_controller.dart';
 
@@ -10,7 +11,8 @@ class UpdatePasswordView extends GetView<UpdatePasswordController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Update Password'),
+        backgroundColor: warna3,
+        title: const Text('Ubah Password'),
         centerTitle: true,
       ),
       body: ListView(
@@ -21,7 +23,9 @@ class UpdatePasswordView extends GetView<UpdatePasswordController> {
             autocorrect: false,
             obscureText: true,
             decoration: const InputDecoration(
-                border: OutlineInputBorder(), labelText: 'Current Password'),
+                border: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(20))),
+                labelText: 'Password Sebelumnya'),
           ),
           const SizedBox(
             height: 20,
@@ -31,7 +35,9 @@ class UpdatePasswordView extends GetView<UpdatePasswordController> {
             autocorrect: false,
             obscureText: true,
             decoration: const InputDecoration(
-                border: OutlineInputBorder(), labelText: 'New Password'),
+                border: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(20))),
+                labelText: 'Password Baru'),
           ),
           const SizedBox(
             height: 20,
@@ -41,14 +47,21 @@ class UpdatePasswordView extends GetView<UpdatePasswordController> {
             autocorrect: false,
             obscureText: true,
             decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: 'Confirm new password'),
+                border: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(20))),
+                labelText: 'Konfirmasi Password Baru'),
           ),
           const SizedBox(
             height: 20,
           ),
           Obx(
             () => ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.blue,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(5),
+                ),
+              ),
               onPressed: () {
                 if (controller.isLoading.isFalse) {
                   controller.gantiPassword();
@@ -56,6 +69,7 @@ class UpdatePasswordView extends GetView<UpdatePasswordController> {
               },
               child: Text(
                 controller.isLoading.isFalse ? 'Ganti password' : 'Loading...',
+                style: const TextStyle(color: Colors.white),
               ),
             ),
           )

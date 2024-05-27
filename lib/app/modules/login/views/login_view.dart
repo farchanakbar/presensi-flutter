@@ -10,57 +10,70 @@ class LoginView extends GetView<LoginController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('LOGIN'),
-        centerTitle: true,
-      ),
-      body: ListView(
-        padding: const EdgeInsets.all(20),
-        children: [
-          TextField(
-            autocorrect: false,
-            controller: controller.emailC,
-            decoration: const InputDecoration(
-              labelText: 'Email',
-              border: OutlineInputBorder(),
+      body: SafeArea(
+        child: ListView(
+          padding: const EdgeInsets.all(20),
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  height: 200,
+                  width: 200,
+                  child: ClipRRect(
+                    child: Image.asset('assets/icon/icon.png'),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                ),
+              ],
             ),
-          ),
-          const SizedBox(
-            height: 20,
-          ),
-          TextField(
-            autocorrect: false,
-            controller: controller.passwordC,
-            obscureText: true,
-            decoration: const InputDecoration(
-              labelText: 'Password',
-              border: OutlineInputBorder(),
+            SizedBox(
+              height: 20,
             ),
-          ),
-          const SizedBox(
-            height: 30,
-          ),
-          Obx(
-            () => ElevatedButton(
-              onPressed: () async {
-                if (controller.isLoading.isFalse) {
-                  await controller.login();
-                }
+            TextField(
+              autocorrect: false,
+              controller: controller.emailC,
+              decoration: const InputDecoration(
+                labelText: 'Email',
+                border: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(20))),
+              ),
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+            TextField(
+              autocorrect: false,
+              controller: controller.passwordC,
+              obscureText: true,
+              decoration: const InputDecoration(
+                labelText: 'Password',
+                border: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(20))),
+              ),
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+            Obx(
+              () => ElevatedButton(
+                onPressed: () async {
+                  if (controller.isLoading.isFalse) {
+                    await controller.login();
+                  }
+                },
+                child:
+                    Text(controller.isLoading.isFalse ? 'Login' : 'Loading...'),
+              ),
+            ),
+            TextButton(
+              onPressed: () {
+                Get.toNamed(Routes.FORGOT_PASSWORD);
               },
-              child:
-                  Text(controller.isLoading.isFalse ? 'Login' : 'Loading...'),
-            ),
-          ),
-          const SizedBox(
-            height: 20,
-          ),
-          TextButton(
-            onPressed: () {
-              Get.toNamed(Routes.FORGOT_PASSWORD);
-            },
-            child: const Text('Lupa Password?'),
-          )
-        ],
+              child: const Text('Lupa Password?'),
+            )
+          ],
+        ),
       ),
     );
   }

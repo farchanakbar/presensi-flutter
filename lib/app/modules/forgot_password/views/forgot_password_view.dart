@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
+import 'package:presensi/app/data/constans/color.dart';
 
 import '../controllers/forgot_password_controller.dart';
 
 class ForgotPasswordView extends GetView<ForgotPasswordController> {
-  const ForgotPasswordView({Key? key}) : super(key: key);
+  const ForgotPasswordView({super.key});
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Forgot Password'),
+        backgroundColor: warna3,
+        title: const Text('Lupa Password'),
         centerTitle: true,
       ),
       body: ListView(
@@ -21,7 +23,8 @@ class ForgotPasswordView extends GetView<ForgotPasswordController> {
             autocorrect: false,
             decoration: const InputDecoration(
               labelText: 'Email',
-              border: OutlineInputBorder(),
+              border: OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(20))),
             ),
           ),
           const SizedBox(

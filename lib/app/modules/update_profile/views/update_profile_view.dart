@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
+import 'package:presensi/app/data/constans/color.dart';
 
 import '../controllers/update_profile_controller.dart';
 
@@ -16,7 +17,8 @@ class UpdateProfileView extends GetView<UpdateProfileController> {
     controller.nameC.text = user['name'];
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Update Profile'),
+        backgroundColor: warna3,
+        title: const Text('Edit Profile'),
         centerTitle: true,
       ),
       body: ListView(
@@ -28,7 +30,8 @@ class UpdateProfileView extends GetView<UpdateProfileController> {
             controller: controller.nipC,
             keyboardType: TextInputType.number,
             decoration: const InputDecoration(
-              border: OutlineInputBorder(),
+              border: OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(20))),
               labelText: 'NIP',
             ),
           ),
@@ -41,7 +44,8 @@ class UpdateProfileView extends GetView<UpdateProfileController> {
             controller: controller.emailC,
             keyboardType: TextInputType.emailAddress,
             decoration: const InputDecoration(
-              border: OutlineInputBorder(),
+              border: OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(20))),
               labelText: 'Email',
             ),
           ),
@@ -52,7 +56,8 @@ class UpdateProfileView extends GetView<UpdateProfileController> {
             autocorrect: false,
             controller: controller.nameC,
             decoration: const InputDecoration(
-              border: OutlineInputBorder(),
+              border: OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(20))),
               labelText: 'Name',
             ),
           ),
@@ -60,7 +65,7 @@ class UpdateProfileView extends GetView<UpdateProfileController> {
             height: 30,
           ),
           const Text(
-            'Photo Profile',
+            'Foto Profile',
             style: TextStyle(fontWeight: FontWeight.bold),
           ),
           const SizedBox(
@@ -85,7 +90,7 @@ class UpdateProfileView extends GetView<UpdateProfileController> {
                   } else {
                     if (user['profile'] != null) {
                       return Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           ClipOval(
                             child: SizedBox(
@@ -97,17 +102,16 @@ class UpdateProfileView extends GetView<UpdateProfileController> {
                               ),
                             ),
                           ),
-                          TextButton.icon(
+                          TextButton(
                             onPressed: () {
                               controller.deleteProfile(user['uid']);
                             },
-                            icon: const Icon(Icons.delete),
-                            label: const Text('delete'),
+                            child: Text('Hapus'),
                           )
                         ],
                       );
                     } else {
-                      return const Text('no image');
+                      return const Text('tidak ada foto');
                     }
                   }
                 },
@@ -116,7 +120,7 @@ class UpdateProfileView extends GetView<UpdateProfileController> {
                 onPressed: () {
                   controller.pickImage();
                 },
-                child: const Text("choosen"),
+                child: const Text("pilih gambar"),
               )
             ],
           ),

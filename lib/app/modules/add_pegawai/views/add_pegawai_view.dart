@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
+import 'package:presensi/app/data/constans/color.dart';
 
 import '../controllers/add_pegawai_controller.dart';
 
@@ -10,7 +11,8 @@ class AddPegawaiView extends GetView<AddPegawaiController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('ADD PEGAWAI'),
+        backgroundColor: warna3,
+        title: const Text('Tambah Pegawai'),
         centerTitle: true,
       ),
       body: ListView(
@@ -21,7 +23,8 @@ class AddPegawaiView extends GetView<AddPegawaiController> {
             keyboardType: TextInputType.number,
             controller: controller.nipC,
             decoration: const InputDecoration(
-              border: OutlineInputBorder(),
+              border: OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(20))),
               labelText: 'NIP',
             ),
           ),
@@ -33,7 +36,8 @@ class AddPegawaiView extends GetView<AddPegawaiController> {
             keyboardType: TextInputType.number,
             controller: controller.jobC,
             decoration: const InputDecoration(
-              border: OutlineInputBorder(),
+              border: OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(20))),
               labelText: 'Job',
             ),
           ),
@@ -44,7 +48,8 @@ class AddPegawaiView extends GetView<AddPegawaiController> {
             autocorrect: false,
             controller: controller.nameC,
             decoration: const InputDecoration(
-              border: OutlineInputBorder(),
+              border: OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(20))),
               labelText: 'Name',
             ),
           ),
@@ -56,7 +61,8 @@ class AddPegawaiView extends GetView<AddPegawaiController> {
             keyboardType: TextInputType.emailAddress,
             controller: controller.emailC,
             decoration: const InputDecoration(
-              border: OutlineInputBorder(),
+              border: OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(20))),
               labelText: 'Email',
             ),
           ),

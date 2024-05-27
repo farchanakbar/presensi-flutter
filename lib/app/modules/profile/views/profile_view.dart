@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:presensi/app/controllers/page_index_controller.dart';
 import 'package:presensi/app/routes/app_pages.dart';
 
+import '../../../data/constans/color.dart';
 import '../controllers/profile_controller.dart';
 
 class ProfileView extends GetView<ProfileController> {
@@ -15,6 +16,7 @@ class ProfileView extends GetView<ProfileController> {
     final pageC = Get.find<PageIndexController>();
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: warna3,
         title: const Text('Profile'),
         centerTitle: true,
       ),
@@ -81,13 +83,13 @@ class ProfileView extends GetView<ProfileController> {
               ListTile(
                 onTap: () =>
                     Get.toNamed(Routes.UPDATE_PROFILE, arguments: dataUser),
-                leading: Icon(Icons.person),
-                title: Text('Update Profile'),
+                leading: const Icon(Icons.person),
+                title: const Text('Edit Profile'),
               ),
               ListTile(
                 onTap: () => Get.toNamed(Routes.UPDATE_PASSWORD),
-                leading: Icon(Icons.vpn_key),
-                title: Text('Ubah Password'),
+                leading: const Icon(Icons.vpn_key),
+                title: const Text('Ubah Password'),
               ),
               if (dataUser['role'] == 'admin')
                 ListTile(
@@ -108,7 +110,11 @@ class ProfileView extends GetView<ProfileController> {
       ),
       bottomNavigationBar: ConvexAppBar(
         style: TabStyle.fixedCircle,
-        items: [
+        color: warna2,
+        backgroundColor: warna4,
+        activeColor: warna3,
+        height: 60,
+        items: const [
           TabItem(icon: Icons.home, title: 'Home'),
           TabItem(icon: Icons.fingerprint, title: 'Finger Print'),
           TabItem(icon: Icons.person, title: 'Profile'),
